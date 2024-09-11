@@ -4,104 +4,80 @@
 #include <limits>
 #include <algorithm>
 
-int minIndex(const std::unordered_map<int, int>& cells) {
-    int minFreq = std::numeric_limits<int>::max();
-    int minKey = -1;
-    for (const auto& pair : cells) {
-        if (pair.second < minFreq) {
-            minFreq = pair.second;
-            minKey = pair.first;
+class LFUCache {
+public:
+    LFUCache(int capacity) {
+        this->capacity = capacity;
+    }
+    
+    int get(int key) {
+        if(cache.find(key) != cache.end()){
+            incFreq(key);
+            return cache[key];
+        } else{
+            return -1;
         }
     }
-    return minKey;
-}
-
-void LFU(std::unordered_map<int, int>& cells, const std::vector<int>& nums, int& hits, int size) {
-    for (int temp : nums) {
-        if (cells.size() < size) {
-            if (cells.find(temp) != cells.end()) {
-                hits++;                
-                cells[temp]++;        
-            } else {
-                cells[temp] = 1;       
-            }
-        } else {
-            if (cells.find(temp) != cells.end()) {
-                hits++;              
-                cells[temp]++;     
-            } else {
-                int minKey = minIndex(cells); 
-                cells.erase(minKey);
-                cells[temp] = 1; 
-            }
+    
+    void put(int key, int value) {
+        if(cache.find(key) != cache.end()){
+            cache[key] = value;
+            hits++;
+            incFreq(key);
+        } else{
+            if(cache.size() >= capacity){
+                removeElm();
+            } 
+            cache[key] = value;
+            freq[key] = 1;
+            map_of_nums_freq[1].push_back(key);
+            minFreq = 1;
         }
     }
-}
 
-void perfCache(std::unordered_map<int, int>& cells, const std::unordered_map<int, int>& perfnums, const std::vector<int>& nums, int& perfhits, int size) {
-    for (int temp : nums) {
-        if (cells.size() < size) {
-            cells[temp] = 1;
-        } else {
-            if (cells.find(temp) != cells.end()) {
-                perfhits++;          
-                cells[temp]++;
-            } else {
-                int minKey = minIndex(perfnums);
-                cells.erase(minKey);
-                cells[temp] = 1;   
-            }
+private:
+    int capacity = 0;
+    int minFreq = 0;
+    int hits = 0; 
+    std::unordered_map<int, int> cache;
+    std::unordered_map<int, int> freq;
+    std::unordered_map<int, std::vector<int>> map_of_nums_freq;
+
+    void incFreq(int key){
+        int frequence = freq[key];
+        freq[key]++;
+        map_of_nums_freq[frequence].erase(std::remove(map_of_nums_freq[frequence].begin(), map_of_nums_freq[frequence].end(), key), map_of_nums_freq[frequence].end());
+        map_of_nums_freq[frequence+1].push_back(key);
+        if(map_of_nums_freq[frequence].empty() && frequence == minFreq){
+            minFreq++;
         }
     }
-}
 
-TEST(LFUComparisonTest, CompareHits) {
-    int lfuHits = 0;
-    int perfHits = 0;
-    int size = 3;
-    std::vector<int> nums = {1, 2, 2, 3, 1, 4, 1, 4, 2};
-
-    std::unordered_map<int, int> lfuCells;
-    std::unordered_map<int, int> perfCells;
-    std::unordered_map<int, int> perfNums;
-
-    // Подсчитываем частоты для идеального кэша
-    for (int num : nums) {
-        perfNums[num]++;
+    void removeElm(){
+        int remEl = map_of_nums_freq[minFreq].front();
+        map_of_nums_freq[minFreq].erase(map_of_nums_freq[minFreq].begin());
+        cache.erase(remEl);
+        freq.erase(remEl);
     }
 
-    // Запускаем оба алгоритма
-    LFU(lfuCells, nums, lfuHits, size);
-    perfCache(perfCells, perfNums, nums, perfHits, size);
-
-    // Проверяем, что количество попаданий в LFU меньше или равно количеству попаданий в идеальном кэше
-    EXPECT_LE(lfuHits, perfHits);  
-}
-
-TEST(LFUComparisonTest, DifferentAccessPatterns) {
-    int lfuHits = 0;
-    int perfHits = 0;
-    int size = 4;
-    std::vector<int> nums = {1, 2, 3, 4, 5, 1, 2, 3, 1, 4, 2, 1}; 
-
-    std::unordered_map<int, int> lfuCells;
-    std::unordered_map<int, int> perfCells;
-    std::unordered_map<int, int> perfNums;
-
-    // Подсчитываем частоты для идеального кэша
-    for (int num : nums) {
-        perfNums[num]++;
+    int hitsRet(){
+        return hits;
     }
+};
 
-    // Запускаем оба алгоритма
-    LFU(lfuCells, nums, lfuHits, size);
-    perfCache(perfCells, perfNums, nums, perfHits, size);
+int main(){
+    int size_of_cache, n, temp  = 0;
+    std::cin >> size_of_cache >> n;
 
-    // Проверяем, что количество попаданий в LFU меньше или равно количеству попаданий в идеальном кэше
-    EXPECT_LE(lfuHits, perfHits); 
-}
+    std::unordered_map<int, int> nums;
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    for (int i = 0; i < n; i++)
+    {
+        std::cin >> temp;
+        nums[temp]++;     
+    }
+    
+    LFUCache lfu (size_of_cache);
+    
+    return 0;
 }
