@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/tests.dir/src/main.cpp.o CMakeFiles/tests.dir/src/LFUCache.cpp.o CMakeFiles/tests.dir/src/IdealCache.cpp.o -o tests  /usr/lib/x86_64-linux-gnu/libgtest.a -lpthread 

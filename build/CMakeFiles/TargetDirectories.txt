@@ -1,3 +1,0 @@
-/home/gorilla/Documents/GitHub/LFU_cache/build/CMakeFiles/tests.dir
-/home/gorilla/Documents/GitHub/LFU_cache/build/CMakeFiles/edit_cache.dir
-/home/gorilla/Documents/GitHub/LFU_cache/build/CMakeFiles/rebuild_cache.dir
