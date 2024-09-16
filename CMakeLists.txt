@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(LFUCacheExample)
+project(LFUCache)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+# Добавляем исполняемый файл для IdealCache
+add_executable(ideal_cache src/main_ideal_cache.cpp src/IdealCache.cpp)  # Добавьте IdealCache.cpp
 
-add_executable(tests src/main.cpp src/LFUCache.cpp src/IdealCache.cpp)
-
-target_link_libraries(tests ${GTEST_LIBRARIES} pthread)
+# Если у вас есть еще один исполняемый файл, добавьте нужные компоненты
+add_executable(lfu_cache src/main_lfu.cpp src/LFUCache.cpp)  # Предполагая, что LFUCache тоже имеет реализацию

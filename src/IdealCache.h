@@ -1,25 +1,28 @@
 #ifndef IDEALCACHE_H
-#define IDEALCACHE_H
+#define IDEALLCACHE_H
 
-#include <unordered_map>
 #include <vector>
+#include <unordered_map>
+#include <cstddef>
 
 class IdealCache {
 public:
-    IdealCache(int capacity, std::vector<int>& futureNums);
-    void get(int value);
-    int hitsRet();
+    IdealCache(size_t capacity, const std::vector<int>& elements);
+    
+    void put(int key);
+    int get(int key);
+    void processStream();
+    int hitret() const;
 
 private:
-    int capacity;
-    int hits;
+    size_t capacity;
+    std::unordered_map<int, bool> cache; 
+    const std::vector<int>& elements;  
+    size_t index;              
+    int hits = 0;
 
-    std::unordered_map<int, int> cache;
-    std::unordered_map<int, int> map_of_freq;
-    std::vector<int> futureNums;
-
-    void rateFreq(std::unordered_map<int, int>& map_of_freq, const std::vector<int>& futureNums);
-    void removeElm(std::unordered_map<int, int>& cache, std::unordered_map<int, int>& map_of_freq);
+    void removeLeastLikely();
+    size_t findNextIndex(int key);
 };
 
 #endif // IDEALCACHE_H
