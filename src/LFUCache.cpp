@@ -1,9 +1,10 @@
 #include "LFUCache.h"
-#include <algorithm>
 
-LFUCache::LFUCache(int capacity) : capacity(capacity), minFreq(0), hits(0) {}
+template <typename T>
+LFUCache<T>::LFUCache(int capacity) : capacity(capacity), minFreq(0), hits(0), map_of_nums_freq({{}}), num_elements(0) {}
 
-void LFUCache::get(int value) {
+template <typename T>
+void LFUCache<T>::get(T value) {
     if (cache.find(value) != cache.end()){
         hits++; 
         incFreq(value);
@@ -12,44 +13,53 @@ void LFUCache::get(int value) {
     }
 }
 
-void LFUCache::put(int value) {
+template <typename T>
+void LFUCache<T>::put(T value) {
     if (capacity == 0){
         return;
-    } else {
-        if (cache.size() >= capacity) {
-            removeElm();
-        }
-        cache[value] = 1;
-        freq[value] = 1;
-        map_of_nums_freq[1].push_back(value);
-        minFreq = 1;
     }
+    cache[value].first = value;
+    incFreq(value);
+
+    if(num_elements == cache.size()){
+        removeElm();
+    }
+
+    cache[value] = std::make_pair(value, 0);
+    map_of_nums_freq[0].push_back(value);
+    num_elements++;
 }
 
-int LFUCache::hitsRet() {
+template <typename T>
+int LFUCache<T>::hitsRet() {
     return hits;
 }
 
-void LFUCache::incFreq(int value) {
-    int currentFreq = freq[value];
-    freq[value]++;
+template <typename T>
+void LFUCache<T>::incFreq(T value) {
+    cache[value].second++;
 
-    map_of_nums_freq[currentFreq].erase(std::remove(map_of_nums_freq[currentFreq].begin(),
-                                                    map_of_nums_freq[currentFreq].end(), value),
-                                                    map_of_nums_freq[currentFreq].end());
-
-    map_of_nums_freq[currentFreq + 1].push_back(value);
-
-    if(map_of_nums_freq[currentFreq].empty() && currentFreq == minFreq) {
-        minFreq++;
+    while(map_of_nums_freq.size() <= cache[value].second){
+        map_of_nums_freq.push_back(std::deque<T>());
     }
+
+    map_of_nums_freq[cache[value].second].push_back(value);
 }
 
-void LFUCache::removeElm() {
-    if (!map_of_nums_freq[minFreq].empty()) {
-        int remEl = map_of_nums_freq[minFreq].front();
-        map_of_nums_freq[minFreq].erase(map_of_nums_freq[minFreq].begin());
-        cache.erase(remEl);
-        freq.erase(remEl);
-    }
+template <typename T>
+void LFUCache<T>::removeElm() {
+    bool success = false;
+
+    for (int i = 0; i < map_of_nums_freq.size() && !success; i++) {
+        while (!map_of_nums_freq[i].empty() && !success) {
+            if(cache[map_of_nums_freq[i].front()].second == i){
+                success = true;
+                cache.erase(map_of_nums_freq[i].front());
+                num_elements--;
+            }
+            map_of_nums_freq[i].pop_front();
+        }     
+    }  
 }
+
+template class LFUCache<int>;  

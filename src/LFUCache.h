@@ -1,27 +1,32 @@
-#ifndef LFUCACHE_H
-#define LFUCACHE_H
+#pragma once
 
 #include <unordered_map>
+#include <deque>
 #include <vector>
 
+template <typename T>
 class LFUCache {
 public:
     LFUCache(int capacity);
-    void get(int value);
-    void put(int value);
+    void get(T value);
+    void put(T value);
     int hitsRet();
 
 private:
     int capacity;
+    int num_elements;
     int minFreq;
     int hits;
 
-    std::unordered_map<int, int> cache; 
-    std::unordered_map<int, int> freq;  
-    std::unordered_map<int, std::vector<int>> map_of_nums_freq; 
+    std::unordered_map<T, std::pair<T, int>> cache; 
+    std::vector<std::deque<T>> map_of_nums_freq;
 
-    void incFreq(int value);
+    void incFreq(T value);
     void removeElm();
 };
 
-#endif // LFUCACHE_H
+template <typename T>
+void incFreq(LFUCache<T>& cache, T value);
+
+template <typename T>
+void removeElm(LFUCache<T>& cache);
