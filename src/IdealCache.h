@@ -1,28 +1,28 @@
-#ifndef IDEALCACHE_H
-#define IDEALLCACHE_H
+#pragma once
 
 #include <vector>
 #include <unordered_map>
 #include <cstddef>
 
+template<typename T>
 class IdealCache {
 public:
-    IdealCache(size_t capacity, const std::vector<int>& elements);
+    IdealCache(size_t capacity, const std::vector<T>& elements);
     
-    void put(int key);
-    int get(int key);
+    void put(T key);
+    T get(T key);
     void processStream();
     int hitret() const;
 
 private:
     size_t capacity;
-    std::unordered_map<int, bool> cache; 
-    const std::vector<int>& elements;  
+    std::unordered_map<T, bool> cache; 
+    const std::vector<T>& elements;  
     size_t index;              
     int hits = 0;
 
     void removeLeastLikely();
-    size_t findNextIndex(int key);
+    size_t findNextIndex(T key);
 };
 
-#endif // IDEALCACHE_H
+#include "IdealCache.tpp" 
