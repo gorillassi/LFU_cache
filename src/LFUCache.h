@@ -1,8 +1,16 @@
 #pragma once
 
 #include <unordered_map>
-#include <deque>
-#include <vector>
+#include <list>
+
+template <typename T>
+struct Node {
+public:
+    Node(T value, int freq) : value(value), freq(freq) {}
+
+    T value;
+    int freq;
+};
 
 template <typename T>
 class LFUCache {
@@ -14,19 +22,13 @@ public:
 
 private:
     int capacity;
-    int num_elements;
-    int minFreq;
+    int min_freq;
     int hits;
 
-    std::unordered_map<T, std::pair<T, int>> cache; 
-    std::vector<std::deque<T>> map_of_nums_freq;
+    std::unordered_map<T, typename std::list<Node<T>>::iterator> cache; 
+    std::unordered_map<int, std::list<Node<T>>> map_of_nums_freq;
 
-    void incFreq(T value);
+    void incFreq(typename std::list<Node<T>>::iterator node);
+    void delFreqList(int freq);
     void removeElm();
 };
-
-template <typename T>
-void incFreq(LFUCache<T>& cache, T value);
-
-template <typename T>
-void removeElm(LFUCache<T>& cache);

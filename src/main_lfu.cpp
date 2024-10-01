@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <vector>
 #include "LFUCache.h"
 
 int main(int argc, char **argv) {
@@ -12,7 +13,7 @@ int main(int argc, char **argv) {
         std::cin >> nums[i];
     }
 
-    LFUCache<int> lfu(size);  // Используем шаблонный класс
+    LFUCache<int> lfu(size);
     //auto start = std::chrono::high_resolution_clock::now();
 
     for (const auto &num : nums) {
