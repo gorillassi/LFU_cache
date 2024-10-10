@@ -1,28 +1,28 @@
 #pragma once
 
 #include <vector>
+#include <queue>
 #include <unordered_map>
 #include <cstddef>
 
 template<typename T>
 class IdealCache {
 public:
-    IdealCache(size_t capacity, const std::vector<T>& elements);
+    IdealCache(int capacity, const std::vector<T>& elements);
     
-    void put(T key);
     T get(T key);
-    void processStream();
-    int hitret() const;
+    int hitret();
+    void processStream(std::vector<T>& elements);
 
 private:
-    size_t capacity;
-    std::unordered_map<T, bool> cache; 
-    const std::vector<T>& elements;  
-    size_t index;              
+    int capacity;
     int hits = 0;
 
-    void removeLeastLikely();
-    size_t findNextIndex(T key);
-};
+    std::vector<T> elements;
+    std::unordered_map<T, std::queue<int>> map_of_indexes;
+    std::unordered_map<T, int> cache;
 
-#include "IdealCache.tpp" 
+    void fillMapOfUse(std::vector<T>& elements);
+    T removeLeastLikely(T value);
+    void put(T value);
+};

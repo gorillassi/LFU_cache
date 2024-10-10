@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
     IdealCache<int> idc(size, nums); 
 
-    idc.processStream();
+    idc.processStream(nums);
 
     std::cout << idc.hitret() << "\n";
 
